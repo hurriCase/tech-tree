@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tech Tree</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0a0d14;
+  --bg2: #111520;
+  --bg3: #181d2e;
+  --panel: #1a1f32;
+  --border: rgba(255,255,255,0.07);
+  --text: #e8e4d8;
+  --text2: #9a9585;
+  --text3: #6b6660;
+  --gold: #c8a84b;
+  --gold2: #f0d070;
+  --era1: #4a90c4;  /* Ancient - blue */
+  --era2: #56b87a;  /* Classical - green */
+  --era3: #c8832a;  /* Antiquity - orange */
+  --era4: #c44b7a;  /* Medieval - pink */
+  --era5: #7a5bc4;  /* Renaissance - purple */
+  --era6: #c45050;  /* Industrial - red */
+  --wonder: #c8a84b; /* Wonder - gold */
+  --radius: 6px;
+  --node-w: 148px;
+  --node-h: 96px;
+  --col-gap: 44px;
+  --row-gap: 20px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── HEADER ─────────────────────────────────── */
+header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: linear-gradient(180deg, rgba(10,13,20,0.98) 0%, rgba(10,13,20,0.85) 100%);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo {
+  font-family: 'Cinzel', serif;
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: 0.12em;
+  color: var(--gold);
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.logo span { color: var(--text2); font-weight: 400; }
+
+.era-filters {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 4px 0;
+}
+.era-filters::-webkit-scrollbar { display: none; }
+
+.era-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid;
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+.era-btn.e0 { color: var(--text2); border-color: rgba(255,255,255,0.15); }
+.era-btn.e0.active, .era-btn.e0:hover { background: rgba(255,255,255,0.08); color: var(--text); border-color: rgba(255,255,255,0.3); }
+.era-btn.e1 { color: var(--era1); border-color: rgba(74,144,196,0.3); }
+.era-btn.e1.active, .era-btn.e1:hover { background: rgba(74,144,196,0.15); border-color: var(--era1); }
+.era-btn.e2 { color: var(--era2); border-color: rgba(86,184,122,0.3); }
+.era-btn.e2.active, .era-btn.e2:hover { background: rgba(86,184,122,0.15); border-color: var(--era2); }
+.era-btn.e3 { color: var(--era3); border-color: rgba(200,131,42,0.3); }
+.era-btn.e3.active, .era-btn.e3:hover { background: rgba(200,131,42,0.15); border-color: var(--era3); }
+.era-btn.e4 { color: var(--era4); border-color: rgba(196,75,122,0.3); }
+.era-btn.e4.active, .era-btn.e4:hover { background: rgba(196,75,122,0.15); border-color: var(--era4); }
+.era-btn.e5 { color: var(--era5); border-color: rgba(122,91,196,0.3); }
+.era-btn.e5.active, .era-btn.e5:hover { background: rgba(122,91,196,0.15); border-color: var(--era5); }
+.era-btn.e6 { color: var(--era6); border-color: rgba(196,80,80,0.3); }
+.era-btn.e6.active, .era-btn.e6:hover { background: rgba(196,80,80,0.15); border-color: var(--era6); }
+.era-btn.ew { color: var(--wonder); border-color: rgba(200,168,75,0.3); }
+.era-btn.ew.active, .era-btn.ew:hover { background: rgba(200,168,75,0.15); border-color: var(--wonder); }
+
+.lang-toggle {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px;
+}
+.lang-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  padding: 4px 12px;
+  border-radius: 16px;
+  border: none;
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.lang-btn.active {
+  background: var(--gold);
+  color: #0a0d14;
+  font-weight: 700;
+}
+
+.zoom-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px 6px;
+}
+.zoom-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+}
+.zoom-btn:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+.zoom-reset { font-size: 12px; }
+.zoom-label {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text2);
+  min-width: 36px;
+  text-align: center;
+}
+
+#zoom-container {
+  position: absolute;
+  top: 0; left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+#app {
+  padding-top: 58px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+#scroll-area {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  cursor: grab;
+}
+#scroll-area.panning { cursor: grabbing; }
+
+/* Era banner labels above columns */
+.era-band {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  pointer-events: none;
+  border-right: 1px dashed;
+  opacity: 0.12;
+}
+
+#canvas-wrap {
+  position: relative;
+  display: inline-block;
+  min-width: 100%;
+}
+
+#svg-layer {
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 1;
+}
+
+/* ─── NODES ───────────────────────────────────── */
+.tech-node {
+  position: absolute;
+  width: var(--node-w);
+  min-height: var(--node-h);
+  border-radius: var(--radius);
+  border: 1px solid;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+  z-index: 2;
+}
+.tech-node::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  opacity: 0.7;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.tech-node:hover {
+  transform: translateY(-2px) scale(1.02);
+  z-index: 10;
+}
+
+.tech-node.era-unlock {
+  min-height: 60px;
+}
+
+/* Era colors */
+.era-1 { background: rgba(74,144,196,0.1); border-color: rgba(74,144,196,0.35); }
+.era-1::before { background: var(--era1); }
+.era-1:hover { box-shadow: 0 4px 24px rgba(74,144,196,0.25); border-color: var(--era1); }
+
+.era-2 { background: rgba(86,184,122,0.1); border-color: rgba(86,184,122,0.35); }
+.era-2::before { background: var(--era2); }
+.era-2:hover { box-shadow: 0 4px 24px rgba(86,184,122,0.25); border-color: var(--era2); }
+
+.era-3 { background: rgba(200,131,42,0.1); border-color: rgba(200,131,42,0.35); }
+.era-3::before { background: var(--era3); }
+.era-3:hover { box-shadow: 0 4px 24px rgba(200,131,42,0.25); border-color: var(--era3); }
+
+.era-4 { background: rgba(196,75,122,0.1); border-color: rgba(196,75,122,0.35); }
+.era-4::before { background: var(--era4); }
+.era-4:hover { box-shadow: 0 4px 24px rgba(196,75,122,0.25); border-color: var(--era4); }
+
+.era-5 { background: rgba(122,91,196,0.1); border-color: rgba(122,91,196,0.35); }
+.era-5::before { background: var(--era5); }
+.era-5:hover { box-shadow: 0 4px 24px rgba(122,91,196,0.25); border-color: var(--era5); }
+
+.era-6 { background: rgba(196,80,80,0.1); border-color: rgba(196,80,80,0.35); }
+.era-6::before { background: var(--era6); }
+.era-6:hover { box-shadow: 0 4px 24px rgba(196,80,80,0.25); border-color: var(--era6); }
+
+.era-unlock {
+  border-width: 1.5px;
+  box-shadow: inset 0 0 20px rgba(255,255,255,0.03);
+}
+.era-1.era-unlock { border-color: var(--era1); box-shadow: 0 0 12px rgba(74,144,196,0.2); }
+.era-2.era-unlock { border-color: var(--era2); box-shadow: 0 0 12px rgba(86,184,122,0.2); }
+.era-3.era-unlock { border-color: var(--era3); box-shadow: 0 0 12px rgba(200,131,42,0.2); }
+.era-4.era-unlock { border-color: var(--era4); box-shadow: 0 0 12px rgba(196,75,122,0.2); }
+.era-5.era-unlock { border-color: var(--era5); box-shadow: 0 0 12px rgba(122,91,196,0.2); }
+.era-6.era-unlock { border-color: var(--era6); box-shadow: 0 0 12px rgba(196,80,80,0.2); }
+
+.wonder-node {
+  background: rgba(200,168,75,0.08);
+  border-color: rgba(200,168,75,0.4);
+  border-style: dashed;
+}
+.wonder-node::before { background: var(--wonder); }
+.wonder-node:hover { box-shadow: 0 4px 24px rgba(200,168,75,0.25); border-color: var(--wonder); }
+
+.node-era-badge {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 700;
+  opacity: 0.7;
+  margin-bottom: 2px;
+}
+.era-1 .node-era-badge { color: var(--era1); }
+.era-2 .node-era-badge { color: var(--era2); }
+.era-3 .node-era-badge { color: var(--era3); }
+.era-4 .node-era-badge { color: var(--era4); }
+.era-5 .node-era-badge { color: var(--era5); }
+.era-6 .node-era-badge { color: var(--era6); }
+.wonder-node .node-era-badge { color: var(--wonder); }
+
+.node-name {
+  font-family: 'Cinzel', serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.node-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 300;
+  color: var(--text2);
+  line-height: 1.45;
+}
+
+.node-costs {
+  display: flex;
+  gap: 6px;
+  margin-top: 2px;
+  align-items: center;
+}
+.node-cost {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.cost-icon { font-size: 9px; opacity: 0.8; }
+
+/* ─── PANEL (selected node detail) ─────────────── */
+#detail-panel {
+  position: fixed;
+  right: 0; top: 58px; bottom: 0;
+  width: 320px;
+  background: var(--bg2);
+  border-left: 1px solid var(--border);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#detail-panel.open { transform: translateX(0); }
+
+.panel-header {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.panel-era-stripe {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.panel-era-label {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  opacity: 0.8;
+}
+.panel-title {
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+.panel-costs {
+  display: flex;
+  gap: 16px;
+}
+.panel-cost-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.panel-cost-label {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.panel-cost-value {
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.panel-body { flex: 1; overflow-y: auto; padding: 16px 20px; }
+.panel-body::-webkit-scrollbar { width: 4px; }
+.panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.panel-section {
+  margin-bottom: 20px;
+}
+.panel-section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+.panel-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+.req-list { display: flex; flex-direction: column; gap: 4px; }
+.req-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  color: var(--text2);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.req-item:hover { background: rgba(255,255,255,0.06); }
+.req-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.req-type {
+  font-size: 8px;
+  color: var(--text3);
+  margin-left: auto;
+  letter-spacing: 0.1em;
+}
+
+#close-panel {
+  position: absolute;
+  top: 14px; right: 14px;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text2);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+#close-panel:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+
+/* ─── LEGEND ─────────────────────────────────── */
+#legend {
+  position: fixed;
+  bottom: 16px; left: 16px;
+  background: rgba(10,13,20,0.9);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  backdrop-filter: blur(8px);
+  z-index: 40;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.legend-line {
+  width: 20px; height: 2px;
+  border-radius: 1px;
+  opacity: 0.6;
+}
+.legend-line.dashed {
+  background: none;
+  border-top: 1.5px dashed currentColor;
+  height: 0;
+}
+
+/* ─── SCROLL HINT ─────────────────────────────── */
+.scroll-hint {
+  position: fixed;
+  bottom: 16px; right: 16px;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text3);
+  display: flex; align-items: center; gap: 6px;
+  animation: fadeOut 4s 3s forwards;
+}
+@keyframes fadeOut { to { opacity: 0; pointer-events: none; } }
+
+/* ─── TRANSITIONS ─────────────────────────────── */
+.tech-node { animation: nodeIn 0.3s ease both; }
+@keyframes nodeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Selection highlight states */
+.node-faded {
+  opacity: 0.12 !important;
+  transition: opacity 0.2s;
+}
+.node-path {
+  opacity: 1 !important;
+  box-shadow: 0 0 0 1.5px currentColor, 0 4px 20px rgba(255,255,255,0.08) !important;
+  transition: opacity 0.2s, box-shadow 0.2s;
+}
+.node-selected {
+  opacity: 1 !important;
+  box-shadow: 0 0 0 2.5px white, 0 0 20px rgba(255,255,255,0.25) !important;
+  transform: scale(1.03) !important;
+  transition: opacity 0.2s, box-shadow 0.2s, transform 0.2s;
+  z-index: 5 !important;
+}
+
+/* SVG path highlighting */
+.edge-path { transition: stroke-opacity 0.2s, stroke-width 0.2s; }
+.edge-faded { stroke-opacity: 0.04 !important; }
+.edge-active { stroke-opacity: 0.9 !important; stroke-width: 2.5px !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Tech<span>Tree</span></div>
+  <div class="era-filters" id="era-filters"></div>
+  <div class="lang-toggle">
+    <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" id="btn-ru" onclick="setLang('ru')">RU</button>
+  </div>
+  <div class="zoom-ctrl">
+    <button class="zoom-btn" onclick="setZoom(zoom-0.1)">−</button>
+    <span class="zoom-label" id="zoom-label">100%</span>
+    <button class="zoom-btn" onclick="setZoom(zoom+0.1)">+</button>
+    <button class="zoom-btn zoom-reset" onclick="resetView()">↺</button>
+  </div>
+</header>
+
+<div id="app">
+  <div id="scroll-area">
+    <div id="zoom-container">
+      <div id="canvas-wrap">
+        <svg id="svg-layer"></svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="detail-panel">
+  <div class="panel-header">
+    <div class="panel-era-stripe" id="panel-stripe"></div>
+    <div class="panel-era-label" id="panel-era-label"></div>
+    <div class="panel-title" id="panel-title"></div>
+    <div class="panel-costs" id="panel-costs"></div>
+    <button id="close-panel" onclick="closePanel()">×</button>
+  </div>
+  <div class="panel-body">
+    <div class="panel-section">
+      <div class="panel-section-title" id="lbl-unlocks">Unlocks</div>
+      <div class="panel-desc" id="panel-desc"></div>
+    </div>
+    <div class="panel-section" id="panel-reqs-section">
+      <div class="panel-section-title" id="lbl-requires">Requires</div>
+      <div class="req-list" id="panel-reqs"></div>
+    </div>
+  </div>
+</div>
+
+<div id="legend">
+  <div class="legend-item">
+    <div class="legend-line" style="background:var(--era1)"></div>
+    <span id="leg-req">Required</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-line dashed" style="color:var(--text3)"></div>
+    <span id="leg-or">Any of</span>
+  </div>
+</div>
+
+<div class="scroll-hint" id="scroll-hint">
+  <span>←</span> <span id="lbl-scroll">scroll to explore</span> <span>→</span>
+</div>
+
+<script>
+const ERA_COLORS = { 1:'#4a90c4', 2:'#56b87a', 3:'#c8832a', 4:'#c44b7a', 5:'#7a5bc4', 6:'#c45050', 0:'#c8a84b' };
+const ERA_VARS  = { 1:'var(--era1)', 2:'var(--era2)', 3:'var(--era3)', 4:'var(--era4)', 5:'var(--era5)', 6:'var(--era6)', 0:'var(--wonder)' };
+
+const I18N = {
+  en: {
+    eraAll:'All', era1:'Ancient', era2:'Classical', era3:'Antiquity', era4:'Medieval', era5:'Renaissance', era6:'Industrial', eraW:'Wonders',
+    unlocks:'Unlocks', requires:'Requires', scrollHint:'scroll to explore',
+    legReq:'Required', legOr:'Any of', labelBeaker:'Beakers', labelCost:'Coins',
+    orReq:'any of', andReq:'required', eraUnlock:'Era Unlock', wonder:'Wonder',
+  },
+  ru: {
+    eraAll:'Все', era1:'Древняя', era2:'Классическая', era3:'Античность', era4:'Средневековье', era5:'Ренессанс', era6:'Индустриальная', eraW:'Чудеса',
+    unlocks:'Открывает', requires:'Требует', scrollHint:'прокрутите для изучения',
+    legReq:'Обязательно', legOr:'Любое из', labelBeaker:'Наука', labelCost:'Монеты',
+    orReq:'любое из', andReq:'обязательно', eraUnlock:'Эпоха', wonder:'Чудо',
+  }
+};
+
+const TECHS_EN = [
+  {id:'tech_ancient_era',name:'Ancient Era',era:1,beaker_cost:0,cost:0,require_techs:null,unlock_era_tech:true,description:'Unlocks Policies, Explorer Unit, Lumberjack Unit, Miner Unit'},
+  {id:'tech_belief',name:'Belief',era:1,beaker_cost:25,cost:25,require_techs:'tech_ancient_era',description:'Unlocks Monument'},
+  {id:'tech_mining',name:'Mining',era:1,beaker_cost:1000,cost:2500,require_techs:'tech_belief',description:'Unlocks Trommel'},
+  {id:'tech_agriculture',name:'Agriculture',era:1,beaker_cost:1000,cost:2500,require_techs:'tech_belief',description:'Unlocks Farm'},
+  {id:'tech_laws',name:'Laws',era:1,beaker_cost:1000,cost:2500,require_techs:'tech_belief',description:'Unlocks Bank'},
+  {id:'tech_pantheon',name:'Pantheon',era:1,beaker_cost:1000,cost:2500,require_techs:'tech_belief',description:'Unlocks Altar'},
+  {id:'tech_classical_era',name:'Classical Era',era:2,beaker_cost:1750,cost:5000,require_techs:'tech_mining/tech_agriculture/tech_laws/tech_pantheon',unlock_era_tech:true,description:'Unlocks +2 Unit Level, Civics'},
+  {id:'tech_artisanship',name:'Artisanship',era:2,beaker_cost:2500,cost:5000,require_techs:'tech_classical_era',description:'Unlocks Forge, Archer Workshop, Tier 1 Metal, Sword'},
+  {id:'tech_iron_working',name:'Iron Working',era:2,beaker_cost:2500,cost:5000,require_techs:'tech_classical_era',description:'Unlocks Tier 1 Bow, Crossbow, Axe, Shield'},
+  {id:'tech_armory',name:'Armory',era:2,beaker_cost:2500,cost:5000,require_techs:'tech_classical_era:tech_mining',description:'Unlocks Barracks, Warrior, Archer, Hoplite Units'},
+  {id:'tech_productivity',name:'Productivity',era:2,beaker_cost:2500,cost:5000,require_techs:'tech_classical_era:tech_mining',description:'Unlocks Mine, Tree Farm'},
+  {id:'tech_pottery',name:'Pottery',era:2,beaker_cost:2500,cost:5000,require_techs:'tech_classical_era:tech_agriculture',description:'Unlocks Granary, Cottage'},
+  {id:'tech_calendar',name:'Calendar',era:2,beaker_cost:2500,cost:5000,require_techs:'tech_classical_era:tech_laws',description:'Unlocks Library'},
+  {id:'tech_state_workforce',name:'State Workforce',era:2,beaker_cost:2500,cost:5000,require_techs:'tech_classical_era:tech_laws',description:'Unlocks Hamlet'},
+  {id:'tech_brewing',name:'Brewing',era:2,beaker_cost:5000,cost:7500,require_techs:'tech_classical_era:tech_pantheon',description:'Unlocks Alchemy Store'},
+  {id:'tech_masonry',name:'Masonry',era:2,beaker_cost:5000,cost:7500,require_techs:'tech_armory:tech_productivity',description:'Unlocks Arrow Tower, Scout Tower, walls'},
+  {id:'tech_toolsmithing',name:'Toolsmithing',era:2,beaker_cost:5000,cost:7500,require_techs:'tech_productivity',description:'Unlocks Smeltery, Fletchery'},
+  {id:'tech_the_wheel',name:'The Wheel',era:2,beaker_cost:5000,cost:7500,require_techs:'tech_pottery',description:'Unlocks Windmill, Sawmill, +20 Growth per Culture Zone'},
+  {id:'tech_animal_husbandry',name:'Animal Husbandry',era:2,beaker_cost:5000,cost:7500,require_techs:'tech_pottery',description:'Unlocks Pasture, Stable'},
+  {id:'tech_code_of_laws',name:'Code of Laws',era:2,beaker_cost:5000,cost:7500,require_techs:'tech_state_workforce',description:'Unlocks Village, +10% coins from Quests'},
+  {id:'tech_construction_site',name:'Construction Site',era:2,beaker_cost:10000,cost:10000,require_techs:'tech_toolsmithing',description:'Unlocks Quarry, Trommel Level'},
+  {id:'tech_land_taxes',name:'Land Taxes',era:2,beaker_cost:10000,cost:10000,require_techs:'tech_the_wheel:tech_animal_husbandry',description:'Unlocks +10% Cottage income, Cottage Level'},
+  {id:'tech_trading',name:'Trading',era:2,beaker_cost:10000,cost:10000,require_techs:'tech_animal_husbandry',description:'Unlocks Trade Outpost, Tree Farm Level'},
+  {id:'tech_writing',name:'Writing',era:2,beaker_cost:10000,cost:10000,require_techs:'tech_calendar',description:'Unlocks Bank Level, Cottage Level'},
+  {id:'tech_monarchy',name:'Monarchy',era:2,beaker_cost:10000,cost:10000,require_techs:'tech_code_of_laws:tech_brewing',description:'Unlocks Large Village, Cottage Level'},
+  {id:'tech_antiquity_era',name:'Antiquity Era',era:3,beaker_cost:15000,cost:15000,require_techs:'tech_construction_site/tech_land_taxes/tech_trading/tech_writing/tech_monarchy',unlock_era_tech:true,description:'Unlocks Capitol, Settler Unit, +2 Unit Level, +1 Warlord, +1 Wonder slot'},
+  {id:'tech_steel_working',name:'Steel Working',era:3,beaker_cost:17500,cost:15000,require_techs:'tech_antiquity_era:tech_iron_working',description:'Unlocks Tier 2 Bow, Crossbow, Axe, Shield'},
+  {id:'tech_craftsmanship',name:'Craftsmanship',era:3,beaker_cost:17500,cost:15000,require_techs:'tech_antiquity_era:tech_artisanship',description:'Unlocks Tier 2 Leather, Metal, Sword, Enderbow'},
+  {id:'tech_castles',name:'Castles',era:3,beaker_cost:17500,cost:15000,require_techs:'tech_antiquity_era:tech_masonry',description:'Unlocks Wall, +10 HP to Control Points'},
+  {id:'tech_military_tradition',name:'Military Tradition',era:3,beaker_cost:17500,cost:15000,require_techs:'tech_antiquity_era:tech_masonry',description:'Unlocks Engineer Unit, Military unit promotions'},
+  {id:'tech_deep_mining',name:'Deep Mining',era:3,beaker_cost:17500,cost:15000,require_techs:'tech_antiquity_era:tech_construction_site:tech_land_taxes',description:'Unlocks Quarry Level, Mine Level'},
+  {id:'tech_commerce',name:'Commerce',era:3,beaker_cost:17500,cost:15000,require_techs:'tech_antiquity_era:tech_toolsmithing:tech_land_taxes:tech_trading',description:'Unlocks Pasture Level, Tree Farm Level'},
+  {id:'tech_horseback_riding',name:'Horseback Riding',era:3,beaker_cost:17500,cost:15000,require_techs:'tech_antiquity_era:tech_trading',description:'Unlocks Pasture Level, +20% travel range'},
+  {id:'tech_minting',name:'Minting',era:3,beaker_cost:17500,cost:15000,require_techs:'tech_antiquity_era:tech_writing',description:'Unlocks Bank Level, +10% Cottage income'},
+  {id:'tech_barter',name:'Barter',era:3,beaker_cost:17500,cost:15000,require_techs:'tech_antiquity_era:tech_trading',description:'Unlocks Bank Level, Market'},
+  {id:'tech_early_empire',name:'Early Empire',era:3,beaker_cost:17500,cost:15000,require_techs:'tech_antiquity_era:tech_monarchy',description:'Unlocks Cottage Level, Warehouse'},
+  {id:'tech_foundation',name:'Foundation',era:3,beaker_cost:30000,cost:20000,require_techs:'tech_castles:tech_deep_mining',description:'Unlocks Tower Level, Windmill Level; tile improvements start higher'},
+  {id:'tech_sifting',name:'Sifting',era:3,beaker_cost:30000,cost:20000,require_techs:'tech_military_tradition:tech_deep_mining',description:'Unlocks Trommel Level, Smeltery Level'},
+  {id:'tech_sailing',name:'Sailing',era:3,beaker_cost:30000,cost:20000,require_techs:'tech_commerce',description:'Unlocks Shipyard, Fishing Boat'},
+  {id:'tech_conservation',name:'Conservation',era:3,beaker_cost:30000,cost:20000,require_techs:'tech_horseback_riding:tech_minting',description:'Unlocks Butchery'},
+  {id:'tech_priesthood',name:'Priesthood',era:3,beaker_cost:30000,cost:20000,require_techs:'tech_barter:tech_early_empire',description:'Unlocks Temple, Alchemy Store Level'},
+  {id:'tech_guilds',name:'Guilds',era:3,beaker_cost:30000,cost:20000,require_techs:'tech_early_empire',description:'Unlocks Bank Level, Adventurers Guild'},
+  {id:'tech_logistic',name:'Logistic',era:3,beaker_cost:55000,cost:40000,require_techs:'tech_foundation',description:'Unlocks Temple Level'},
+  {id:'tech_gunpowder',name:'Gunpowder',era:3,beaker_cost:55000,cost:40000,require_techs:'tech_foundation',description:'Unlocks Cannon Tower, Tree Farm Level, +0.25 hammer per plain'},
+  {id:'tech_open_field_excavation',name:'Open Field Excavation',era:3,beaker_cost:55000,cost:40000,require_techs:'tech_sifting:tech_sailing',description:'Unlocks Mine Level, Quarry Level, +15 Culture per Zone'},
+  {id:'tech_aquaculture',name:'Aquaculture',era:3,beaker_cost:55000,cost:40000,require_techs:'tech_sailing',description:'Unlocks Alchemy Store Level, Fletchery Level, Windmill Level'},
+  {id:'tech_baking',name:'Baking',era:3,beaker_cost:55000,cost:40000,require_techs:'tech_sailing:tech_horseback_riding',description:'Unlocks Bakery, Pasture Level'},
+  {id:'tech_printing_press',name:'Printing Press',era:3,beaker_cost:55000,cost:40000,require_techs:'tech_conservation:tech_priesthood',description:'Unlocks +10% Culture Rate'},
+  {id:'tech_scholarship',name:'Scholarship',era:3,beaker_cost:55000,cost:40000,require_techs:'tech_conservation:tech_guilds',description:'Unlocks Library Level, Alchemy Store Level'},
+  {id:'tech_global_trade',name:'Global Trade',era:3,beaker_cost:55000,cost:40000,require_techs:'tech_priesthood',description:'Unlocks +1 similar trade good income multiplier'},
+  {id:'tech_feudalism',name:'Feudalism',era:3,beaker_cost:55000,cost:40000,require_techs:'tech_guilds',description:'Unlocks Town, Cottage Level'},
+  {id:'tech_medieval_era',name:'Medieval Era',era:4,beaker_cost:125000,cost:125000,require_techs:'tech_logistic/tech_gunpowder/tech_open_field_excavation/tech_aquaculture/tech_baking/tech_printing_press/tech_scholarship/tech_global_trade/tech_feudalism',unlock_era_tech:true,description:'Unlocks +2 Unit Level, +1 Warlord, government change, 15% beaker/coin discount, 50% tile improvement bonus'},
+  {id:'tech_carbide_working',name:'Carbide Working',era:4,beaker_cost:100000,cost:150000,require_techs:'tech_medieval_era:tech_steel_working',description:'Unlocks Tier 3 Bow, Crossbow, Axe, Shield'},
+  {id:'tech_chemical_bonding',name:'Chemical Bonding',era:4,beaker_cost:100000,cost:150000,require_techs:'tech_medieval_era:tech_craftsmanship',description:'Unlocks Tier 3 Metal, Leather, Sword, Enderbow'},
+  {id:'tech_philosophy',name:'Philosophy',era:4,beaker_cost:100000,cost:100000,require_techs:'tech_medieval_era:tech_logistic',description:'Unlocks Cottage Level, Library Level'},
+  {id:'tech_mining_guilds',name:'Mining Guilds',era:4,beaker_cost:100000,cost:100000,require_techs:'tech_medieval_era:tech_gunpowder:tech_open_field_excavation',description:'Unlocks Mine Level, Smeltery Level, +10% Bank Rate'},
+  {id:'tech_rationalism',name:'Rationalism',era:4,beaker_cost:100000,cost:100000,require_techs:'tech_medieval_era:tech_aquaculture',description:'Unlocks Lab, Alchemy Store Level'},
+  {id:'tech_exploration',name:'Exploration',era:4,beaker_cost:100000,cost:100000,require_techs:'tech_medieval_era:tech_aquaculture',description:'Unlocks Lighthouse, Scout Ship'},
+  {id:'tech_ritual',name:'Ritual',era:4,beaker_cost:100000,cost:100000,require_techs:'tech_medieval_era:tech_printing_press',description:'Unlocks Temple Level, Marketplace Level'},
+  {id:'tech_currency',name:'Currency',era:4,beaker_cost:100000,cost:100000,require_techs:'tech_medieval_era:tech_global_trade:tech_feudalism',description:'Unlocks Bank Level, Butchery Level'},
+  {id:'tech_construction',name:'Construction',era:4,beaker_cost:100000,cost:100000,require_techs:'tech_medieval_era:tech_feudalism',description:'Unlocks Large Town, Marketplace Level'},
+  {id:'tech_siege_tactics',name:'Siege Tactics',era:4,beaker_cost:200000,cost:200000,require_techs:'tech_philosophy:tech_gunpowder',description:'Unlocks +1 damage vs walls, destroy structure for 25% refund, +0.35 beaker per forest'},
+  {id:'tech_branch_mining',name:'Branch Mining',era:4,beaker_cost:200000,cost:200000,require_techs:'tech_mining_guilds',description:'Unlocks 15% smelting bonus, +0.5 hammers per Taiga & Tundra'},
+  {id:'tech_turbines',name:'Turbines',era:4,beaker_cost:200000,cost:200000,require_techs:'tech_rationalism',description:'Unlocks Windmill Level, +0.25 beaker per Ocean chunk'},
+  {id:'tech_importation',name:'Importation',era:4,beaker_cost:200000,cost:200000,require_techs:'tech_exploration',description:'Unlocks +1 Happiness per Trade Good'},
+  {id:'tech_ideology',name:'Ideology',era:4,beaker_cost:200000,cost:200000,require_techs:'tech_exploration:tech_ritual',description:'Unlocks +0.25 Beaker per jungle and mushroom chunk'},
+  {id:'tech_compass',name:'Compass',era:4,beaker_cost:200000,cost:200000,require_techs:'tech_exploration',description:'Unlocks Arrow Ship, Cannon Ship, Fletchery Level'},
+  {id:'tech_education',name:'Education',era:4,beaker_cost:200000,cost:200000,require_techs:'tech_scholarship:tech_currency',description:'Unlocks Library Level, Lab Level'},
+  {id:'tech_taxation',name:'Taxation',era:4,beaker_cost:200000,cost:200000,require_techs:'tech_currency',description:'Unlocks Pasture Level, Marketplace Level'},
+  {id:'tech_urbanization',name:'Urbanization',era:4,beaker_cost:200000,cost:200000,require_techs:'tech_construction',description:'Unlocks Tower Level, Cottage Level'},
+  {id:'tech_advanced_masonry',name:'Advanced Masonry',era:4,beaker_cost:200000,cost:200000,require_techs:'tech_construction',description:'Unlocks tile improvements start higher, Butchery Level'},
+  {id:'tech_fortification',name:'Fortification',era:4,beaker_cost:300000,cost:400000,require_techs:'tech_siege_tactics:tech_branch_mining',description:'Unlocks Artillery Tower, Mine Level, Fletchery Level'},
+  {id:'tech_machinery',name:'Machinery',era:4,beaker_cost:300000,cost:400000,require_techs:'tech_branch_mining:tech_turbines',description:'Unlocks Cottage Level, +25% speed to Bakeries & Trommels'},
+  {id:'tech_mercantile',name:'Mercantile',era:4,beaker_cost:300000,cost:400000,require_techs:'tech_turbines:tech_importation',description:'Unlocks Tavern, +10% Trade Rate'},
+  {id:'tech_inquisition',name:'Inquisition',era:4,beaker_cost:300000,cost:400000,require_techs:'tech_ideology:tech_compass',description:'Unlocks Temple Level, +0.005 happiness per beach & swamp chunk'},
+  {id:'tech_energy_study',name:'Energy Study',era:4,beaker_cost:300000,cost:400000,require_techs:'tech_compass:tech_education',description:'Unlocks Radiance Tower, Lab Level'},
+  {id:'tech_gears',name:'Gears',era:4,beaker_cost:300000,cost:400000,require_techs:'tech_education',description:'Unlocks Bakery Level, +15% Smelting bonus'},
+  {id:'tech_banking',name:'Banking',era:4,beaker_cost:300000,cost:400000,require_techs:'tech_taxation',description:'Unlocks Bank Level, +15% coins from quests'},
+  {id:'tech_nationalism',name:'Nationalism',era:4,beaker_cost:300000,cost:400000,require_techs:'tech_taxation:tech_urbanization',description:'Unlocks City, Smeltery Level'},
+  {id:'tech_sanitization',name:'Sanitization',era:4,beaker_cost:300000,cost:400000,require_techs:'tech_advanced_masonry',description:'Unlocks Hospital, Bakery Level, +1 Growth from River'},
+  {id:'tech_renaissance_era',name:'Renaissance Era',era:5,beaker_cost:500000,cost:750000,require_techs:'tech_fortification/tech_machinery/tech_mercantile/tech_inquisition/tech_energy_study/tech_gears/tech_banking/tech_nationalism/tech_sanitization',unlock_era_tech:true,description:'Unlocks +1 Warlord, +2 Unit Level, +1 Wonder research slot'},
+  {id:'tech_composite',name:'Composite',era:5,beaker_cost:425000,cost:2000000,require_techs:'tech_renaissance_era:tech_chemical_bonding',description:'Tier 4 Metal, Leather, Sword, Enderbow'},
+  {id:'tech_titanium_working',name:'Titanium Working',era:5,beaker_cost:425000,cost:2000000,require_techs:'tech_renaissance_era:tech_carbide_working',description:'Unlocks Tier 4 Bow, Crossbow, Axe, Shield'},
+  {id:'tech_communication',name:'Communication',era:5,beaker_cost:425000,cost:1000000,require_techs:'tech_renaissance_era:tech_fortification',description:'Unlocks +400 base Culture, -75% Anarchy Timer in Towns'},
+  {id:'tech_advanced_efficiency',name:'Advanced Efficiency',era:5,beaker_cost:425000,cost:1000000,require_techs:'tech_renaissance_era:tech_fortification',description:'Unlocks Library Level, +1 XP to Structures per tick'},
+  {id:'tech_engineering',name:'Engineering',era:5,beaker_cost:425000,cost:1000000,require_techs:'tech_renaissance_era:tech_machinery',description:'Unlocks Tower Level, +10% Structure Hit Points'},
+  {id:'tech_replaceable_parts',name:'Replaceable Parts',era:5,beaker_cost:425000,cost:1000000,require_techs:'tech_renaissance_era:tech_gears:tech_machinery',description:'Unlocks Butchery Level, +20 hammers & +10 beakers per Culture Zone'},
+  {id:'tech_tourism',name:'Tourism',era:5,beaker_cost:425000,cost:1000000,require_techs:'tech_renaissance_era:tech_mercantile:tech_inquisition',description:'Unlocks Marketplace Level, +20% travel range at Stables/Shipyards'},
+  {id:'tech_civil_service',name:'Civil Service',era:5,beaker_cost:425000,cost:1000000,require_techs:'tech_renaissance_era:tech_mercantile:tech_gears',description:'Unlocks Trommel Level, Windmill Level'},
+  {id:'tech_trade_networks',name:'Trade Networks',era:5,beaker_cost:425000,cost:1000000,require_techs:'tech_renaissance_era:tech_energy_study:tech_banking',description:'Unlocks +1 similar trade good income multiplier'},
+  {id:'tech_economics',name:'Economics',era:5,beaker_cost:425000,cost:1000000,require_techs:'tech_renaissance_era:tech_banking',description:'Unlocks Bank Level'},
+  {id:'tech_agency',name:'Agency',era:5,beaker_cost:425000,cost:1000000,require_techs:'tech_renaissance_era:tech_nationalism',description:'Unlocks Lab Level, Alchemy Store Level'},
+  {id:'tech_politics',name:'Politics',era:5,beaker_cost:425000,cost:1000000,require_techs:'tech_renaissance_era:tech_nationalism:tech_sanitization',description:'Unlocks Large City, Tower Level'},
+  {id:'tech_core_mining',name:'Core Mining',era:5,beaker_cost:425000,cost:600000,require_techs:'tech_renaissance_era:tech_urbanization',description:'Unlocks Quarry, Trommel, Mine, Smeltery Levels'},
+  {id:'tech_radio',name:'Radio',era:5,beaker_cost:500000,cost:1500000,require_techs:'tech_communication',description:'Unlocks +20% XP for units, -10% Unit Promotion cost'},
+  {id:'tech_globalization',name:'Globalization',era:5,beaker_cost:500000,cost:1500000,require_techs:'tech_communication:tech_advanced_efficiency',description:'Unlocks Temple Level, +1 Culture Zones to all towns'},
+  {id:'tech_industrialization',name:'Industrialization',era:5,beaker_cost:500000,cost:1500000,require_techs:'tech_advanced_efficiency:tech_engineering:tech_replaceable_parts',description:'Unlocks Fletchery Level, +4 Tile improvement slots per town'},
+  {id:'tech_world_trade',name:'World Trade',era:5,beaker_cost:500000,cost:1500000,require_techs:'tech_engineering:tech_replaceable_parts:tech_tourism',description:'Unlocks Bank Level, Metropolis and Capital Levels'},
+  {id:'tech_cultural_heritage',name:'Cultural Heritage',era:5,beaker_cost:500000,cost:1500000,require_techs:'tech_tourism:tech_trade_networks',description:'Unlocks Temple Level, +5% Culture Rate per Trade Good'},
+  {id:'tech_experimentation',name:'Experimentation',era:5,beaker_cost:500000,cost:1500000,require_techs:'tech_civil_service:tech_trade_networks',description:'Unlocks Arcane Tower, Lab Level'},
+  {id:'tech_stock_market',name:'Stock Market',era:5,beaker_cost:500000,cost:1500000,require_techs:'tech_trade_networks:tech_economics',description:'Unlocks Bank Level'},
+  {id:'tech_capitalism',name:'Capitalism',era:5,beaker_cost:500000,cost:1500000,require_techs:'tech_economics:tech_agency',description:'Unlocks +1 similar trade good income multiplier'},
+  {id:'tech_hydroponics',name:'Hydroponics',era:5,beaker_cost:500000,cost:1500000,require_techs:'tech_agency:tech_politics',description:'Unlocks Pasture Level, Bakery Level, 750 growth per bonus egg'},
+  {id:'tech_industrial_era',name:'Industrial Era',era:6,beaker_cost:1000000,cost:5000000,require_techs:'tech_radio/tech_globalization/tech_industrialization/tech_world_trade/tech_cultural_heritage/tech_experimentation/tech_stock_market/tech_capitalism/tech_hydroponics',unlock_era_tech:true,description:'Unlocks +1 Unit Level, +1 Wonder research slot'},
+  {id:'tech_abyssal_composites',name:'Abyssal Composite',era:6,beaker_cost:1000000,cost:1500000,require_techs:'tech_industrial_era:tech_composite',description:'Tier 5 Metal, Leather, Sword, Enderbow'},
+  {id:'tech_abyssal_working',name:'Abyssal Working',era:6,beaker_cost:1000000,cost:2500000,require_techs:'tech_industrial_era:tech_titanium_working',description:'Unlocks Tier 5 Bow, Crossbow, Axe, Shield'},
+  {id:'tech_robotics',name:'Robotics',era:6,beaker_cost:2000000,cost:2500000,require_techs:'tech_industrial_era:tech_abyssal_working:tech_abyssal_composites:tech_radio:tech_industrialization',description:'3 Victory Points for first Lvl 10 military unit; 1 VP/week per unique unit type at Lvl 10'},
+  {id:'tech_enlightenment',name:'Enlightenment',era:6,beaker_cost:5000000,cost:25000000,require_techs:'tech_industrial_era:tech_globalization:tech_industrialization:tech_world_trade:tech_cultural_heritage',description:'3 Victory Points on completion; 1 Victory Point per week'},
+  {id:'tech_council_of_eight',name:'Council of Eight',era:6,wonder:true,beaker_cost:1000000,cost:1000000,require_techs:'tech_industrial_era:tech_experimentation:tech_stock_market:tech_capitalism:tech_hydroponics',description:'Unlocks The Council of Eight'},
+  {id:'tech_great_pyramid',name:'Great Pyramid',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks The Great Pyramid'},
+  {id:'tech_great_lighthouse',name:'Great Lighthouse',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks The Great Lighthouse'},
+  {id:'tech_hanging_gardens',name:'Hanging Gardens',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks The Hanging Gardens'},
+  {id:'tech_colossus',name:'Colossus',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks The Colossus'},
+  {id:'tech_grand_ship_ingermanland',name:'Grand Ship Ingermanland',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks The Grand Ship Ingermanland'},
+  {id:'tech_taj_mahal',name:'Taj Mahal',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks The Taj Mahal'},
+  {id:'tech_temple_of_artemis',name:'Temple of Artemis',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks The Temple of Artemis'},
+  {id:'tech_statue_of_liberty',name:'Statue of Liberty',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks The Statue of Liberty'},
+  {id:'tech_notre_dame',name:'Notre Dame',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks Notre Dame'},
+  {id:'tech_colosseum',name:'Colosseum',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks The Colosseum'},
+  {id:'tech_oxford_university',name:'Oxford University',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks Oxford University'},
+  {id:'tech_himeji',name:'Himeji Castle',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks Himeji Castle'},
+  {id:'tech_kremlin',name:'Kremlin',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks The Kremlin'},
+  {id:'tech_angkor_wat',name:'Angkor Wat',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks Angkor Wat'},
+  {id:'tech_chichen_itza',name:'Chichen Itza',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks Chichen Itza'},
+  {id:'tech_big_ben',name:'Big Ben',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks Big Ben'},
+  {id:'tech_globe_theatre',name:'Globe Theatre',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks The Globe Theatre'},
+  {id:'tech_oracle',name:'Oracle',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks The Oracle'},
+  {id:'tech_brandenburg_gate',name:'Brandenburg Gate',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks The Brandenburg Gate'},
+  {id:'tech_global_stock_exchange',name:'Global Stock Exchange',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks The Global Stock Exchange'},
+  {id:'tech_huey_teocalli',name:'Huey Teocalli',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks Huey Teocalli'},
+  {id:'tech_porcelain_tower',name:'Porcelain Tower',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks The Porcelain Tower'},
+  {id:'tech_great_library',name:'Great Library',wonder:true,era:0,beaker_cost:75000,cost:75000,require_techs:null,description:'Unlocks The Great Library'},
+];
+
+const NAMES_RU = {
+  'tech_ancient_era':'Древняя Эпоха','tech_belief':'Вера','tech_mining':'Горное дело','tech_agriculture':'Земледелие','tech_laws':'Законы','tech_pantheon':'Пантеон','tech_classical_era':'Классическая Эпоха','tech_artisanship':'Ремесло','tech_iron_working':'Обработка железа','tech_armory':'Оружейная','tech_productivity':'Производительность','tech_pottery':'Гончарство','tech_calendar':'Календарь','tech_state_workforce':'Государственный труд','tech_brewing':'Пивоварение','tech_masonry':'Каменная кладка','tech_toolsmithing':'Кузнечное дело','tech_the_wheel':'Колесо','tech_animal_husbandry':'Скотоводство','tech_code_of_laws':'Свод законов','tech_construction_site':'Стройплощадка','tech_land_taxes':'Земельные налоги','tech_trading':'Торговля','tech_writing':'Письмо','tech_monarchy':'Монархия','tech_antiquity_era':'Античная Эпоха','tech_steel_working':'Обработка стали','tech_craftsmanship':'Мастерство','tech_castles':'Замки','tech_military_tradition':'Военная традиция','tech_deep_mining':'Глубокая добыча','tech_commerce':'Коммерция','tech_horseback_riding':'Верховая езда','tech_minting':'Чеканка монет','tech_barter':'Бартер','tech_early_empire':'Ранняя империя','tech_foundation':'Фундамент','tech_sifting':'Просеивание','tech_sailing':'Мореплавание','tech_conservation':'Сохранение','tech_priesthood':'Жречество','tech_guilds':'Гильдии','tech_logistic':'Логистика','tech_gunpowder':'Порох','tech_open_field_excavation':'Открытые раскопки','tech_aquaculture':'Аквакультура','tech_baking':'Выпечка','tech_printing_press':'Печатный станок','tech_scholarship':'Учёность','tech_global_trade':'Мировая торговля','tech_feudalism':'Феодализм','tech_medieval_era':'Средневековая Эпоха','tech_carbide_working':'Обработка карбида','tech_chemical_bonding':'Химические связи','tech_philosophy':'Философия','tech_mining_guilds':'Горняцкие гильдии','tech_rationalism':'Рационализм','tech_exploration':'Исследование','tech_ritual':'Ритуал','tech_currency':'Валюта','tech_construction':'Строительство','tech_siege_tactics':'Осадная тактика','tech_branch_mining':'Шахтная добыча','tech_turbines':'Турбины','tech_importation':'Импорт','tech_ideology':'Идеология','tech_compass':'Компас','tech_education':'Образование','tech_taxation':'Налогообложение','tech_urbanization':'Урбанизация','tech_advanced_masonry':'Развитая кладка','tech_fortification':'Укрепление','tech_machinery':'Механизмы','tech_mercantile':'Торговое дело','tech_inquisition':'Инквизиция','tech_energy_study':'Изучение энергии','tech_gears':'Шестерёнки','tech_banking':'Банковское дело','tech_nationalism':'Национализм','tech_sanitization':'Санитария','tech_renaissance_era':'Эпоха Ренессанса','tech_composite':'Композиты','tech_titanium_working':'Обработка титана','tech_communication':'Коммуникации','tech_advanced_efficiency':'Высокая эффективность','tech_engineering':'Инженерия','tech_replaceable_parts':'Взаимозаменяемые детали','tech_tourism':'Туризм','tech_civil_service':'Государственная служба','tech_trade_networks':'Торговые сети','tech_economics':'Экономика','tech_agency':'Агентство','tech_politics':'Политика','tech_core_mining':'Глубинная добыча','tech_radio':'Радио','tech_globalization':'Глобализация','tech_industrialization':'Индустриализация','tech_world_trade':'Мировая торговля II','tech_cultural_heritage':'Культурное наследие','tech_experimentation':'Экспериментирование','tech_stock_market':'Фондовый рынок','tech_capitalism':'Капитализм','tech_hydroponics':'Гидропоника','tech_industrial_era':'Индустриальная Эпоха','tech_abyssal_composites':'Бездонный композит','tech_abyssal_working':'Бездонная обработка','tech_robotics':'Робототехника','tech_enlightenment':'Просвещение','tech_council_of_eight':'Совет Восьми','tech_great_pyramid':'Великая пирамида','tech_great_lighthouse':'Александрийский маяк','tech_hanging_gardens':'Висячие сады','tech_colossus':'Колосс','tech_grand_ship_ingermanland':'Флагман Ингерманланд','tech_taj_mahal':'Тадж-Махал','tech_temple_of_artemis':'Храм Артемиды','tech_statue_of_liberty':'Статуя Свободы','tech_notre_dame':'Нотр-Дам','tech_colosseum':'Колизей','tech_oxford_university':'Оксфордский университет','tech_himeji':'Замок Химэдзи','tech_kremlin':'Кремль','tech_angkor_wat':'Ангкор-Ват','tech_chichen_itza':'Чичен-Ица','tech_big_ben':'Биг-Бен','tech_globe_theatre':'Глобус (Театр)','tech_oracle':'Оракул','tech_brandenburg_gate':'Бранденбургские ворота','tech_global_stock_exchange':'Глобальная биржа','tech_huey_teocalli':'Уэй Теокалли','tech_porcelain_tower':'Фарфоровая башня','tech_great_library':'Александрийская библиотека'
+};
+
+const DESC_RU = {
+  'tech_ancient_era':'Открывает Политики, Разведчика, Лесоруба, Шахтёра','tech_belief':'Открывает Монумент','tech_mining':'Открывает Землечерпалку','tech_agriculture':'Открывает Ферму','tech_laws':'Открывает Банк','tech_pantheon':'Открывает Алтарь','tech_classical_era':'Открывает +2 уровня юнитов, Гражданство','tech_artisanship':'Открывает Кузницу, Мастерскую лучника, Металл Т1, Меч Т1','tech_iron_working':'Открывает Лук Т1, Арбалет, Топор, Щит Т1','tech_armory':'Открывает Казармы, Воина, Лучника, Гоплита','tech_productivity':'Открывает Шахту, Лесопилку','tech_pottery':'Открывает Зернохранилище, Коттедж','tech_calendar':'Открывает Библиотеку','tech_state_workforce':'Открывает Хутор','tech_brewing':'Открывает Алхимическую лавку','tech_masonry':'Открывает Стрелковую башню, Смотровую башню','tech_toolsmithing':'Открывает Металлургию, Оружейную','tech_the_wheel':'Открывает Мельницу, Лесопилку, +20 роста на Культурную зону','tech_animal_husbandry':'Открывает Пастбище, Конюшню','tech_code_of_laws':'Открывает Деревню, +10% монет из квестов','tech_construction_site':'Открывает Карьер, улучшение Землечерпалки','tech_land_taxes':'Открывает +10% дохода Коттеджа, улучшение Коттеджа','tech_trading':'Открывает Торговый форпост, улучшение Лесопилки','tech_writing':'Открывает улучшение Банка, Коттеджа','tech_monarchy':'Открывает Большую деревню, улучшение Коттеджа','tech_antiquity_era':'Открывает Столицу, Поселенца, +2 уровня юнитов, +1 Вождь, +1 слот Чуда','tech_steel_working':'Открывает Лук Т2, Арбалет, Топор, Щит Т2','tech_craftsmanship':'Открывает Кожу Т2, Металл Т2, Меч Т2, Эндерлук Т2','tech_castles':'Открывает Стену, +10 HP опорным пунктам','tech_military_tradition':'Открывает Инженера, военные звания','tech_deep_mining':'Открывает улучшение Карьера и Шахты','tech_commerce':'Открывает улучшение Пастбища и Лесопилки','tech_horseback_riding':'Открывает улучшение Пастбища, +20% дальность хода','tech_minting':'Открывает улучшение Банка, +10% дохода Коттеджа','tech_barter':'Открывает улучшение Банка, Рынок','tech_early_empire':'Открывает улучшение Коттеджа, Склад','tech_foundation':'Открывает улучшение Башни и Мельницы; постройки начинают с более высокого уровня','tech_sifting':'Открывает улучшение Землечерпалки и Металлургии','tech_sailing':'Открывает Верфь, Рыболовное судно','tech_conservation':'Открывает Мясную лавку','tech_priesthood':'Открывает Храм, улучшение Алхимической лавки','tech_guilds':'Открывает улучшение Банка, Гильдию авантюристов','tech_logistic':'Открывает улучшение Храма','tech_gunpowder':'Открывает Пушечную башню, улучшение Лесопилки','tech_open_field_excavation':'Открывает улучшение Шахты и Карьера, +15 Культуры на зону','tech_aquaculture':'Открывает улучшение Алхимической лавки, Оружейной, Мельницы','tech_baking':'Открывает Пекарню, улучшение Пастбища','tech_printing_press':'Открывает +10% скорости Культуры','tech_scholarship':'Открывает улучшение Библиотеки и Алхимической лавки','tech_global_trade':'Открывает +1 множитель однотипных торговых товаров','tech_feudalism':'Открывает Город, улучшение Коттеджа','tech_medieval_era':'Открывает +2 уровня юнитов, +1 Вождь, смену правительства, скидку 15%','tech_carbide_working':'Открывает Лук Т3, Арбалет, Топор, Щит Т3','tech_chemical_bonding':'Открывает Металл Т3, Кожу Т3, Меч Т3, Эндерлук Т3','tech_philosophy':'Открывает улучшение Коттеджа и Библиотеки','tech_mining_guilds':'Открывает улучшение Шахты и Металлургии, +10% Банка','tech_rationalism':'Открывает Лабораторию, улучшение Алхимической лавки','tech_exploration':'Открывает Маяк, Разведывательный корабль','tech_ritual':'Открывает улучшение Храма и Рынка','tech_currency':'Открывает улучшение Банка и Мясной лавки','tech_construction':'Открывает Большой город, улучшение Рынка','tech_siege_tactics':'Открывает +1 урон по стенам, возврат 25% монет за разрушение, +0.35 науки с леса','tech_branch_mining':'Открывает +15% бонус плавки, +0.5 молотков с тайги','tech_turbines':'Открывает улучшение Мельницы, +0.25 науки с морской клетки','tech_importation':'Открывает +1 счастья с торгового товара','tech_ideology':'Открывает +0.25 науки с джунглей и грибов','tech_compass':'Открывает Стрелковый и Пушечный корабли, улучшение Оружейной','tech_education':'Открывает улучшение Библиотеки и Лаборатории','tech_taxation':'Открывает улучшение Пастбища и Рынка','tech_urbanization':'Открывает улучшение Башни и Коттеджа','tech_advanced_masonry':'Открывает повышенный старт построек, улучшение Мясной лавки','tech_fortification':'Открывает Артиллерийскую башню, улучшение Шахты и Оружейной','tech_machinery':'Открывает улучшение Коттеджа, +25% скорости Пекарни и Землечерпалки','tech_mercantile':'Открывает Таверну, +10% торгового дохода','tech_inquisition':'Открывает улучшение Храма, +0.005 счастья с пляжей','tech_energy_study':'Открывает Башню Сияния, улучшение Лаборатории','tech_gears':'Открывает улучшение Пекарни, +15% бонус плавки','tech_banking':'Открывает улучшение Банка, +15% монет из квестов','tech_nationalism':'Открывает Мегаполис, улучшение Металлургии','tech_sanitization':'Открывает Больницу, улучшение Пекарни, +1 роста с реки','tech_renaissance_era':'Открывает +1 Вождь, +2 уровня юнитов, +1 слот Чуда','tech_composite':'Металл Т4, Кожа Т4, Меч Т4, Эндерлук Т4','tech_titanium_working':'Открывает Лук Т4, Арбалет, Топор, Щит Т4','tech_communication':'Открывает +400 Культуры, -75% таймера анархии','tech_advanced_efficiency':'Открывает улучшение Библиотеки, +1 опыта постройкам в час','tech_engineering':'Открывает улучшение Башни, +10% HP построек','tech_replaceable_parts':'Открывает улучшение Мясной лавки, +20 молотков и +10 науки на Культурную зону','tech_tourism':'Открывает улучшение Рынка, +20% дальности хода у конюшен','tech_civil_service':'Открывает улучшение Землечерпалки и Мельницы','tech_trade_networks':'Открывает +1 множитель однотипных торговых товаров','tech_economics':'Открывает улучшение Банка','tech_agency':'Открывает улучшение Лаборатории и Алхимической лавки','tech_politics':'Открывает Большой мегаполис, улучшение Башни','tech_core_mining':'Открывает улучшение Карьера, Землечерпалки, Шахты, Металлургии','tech_radio':'Открывает +20% опыта юнитов, -10% стоимости звания','tech_globalization':'Открывает улучшение Храма, +1 Культурная зона всем городам','tech_industrialization':'Открывает улучшение Оружейной, +4 слота построек в городе','tech_world_trade':'Открывает улучшение Банка, Метрополиса и Столицы','tech_cultural_heritage':'Открывает улучшение Храма, +5% Культуры за торговый товар','tech_experimentation':'Открывает Тайную башню, улучшение Лаборатории','tech_stock_market':'Открывает улучшение Банка','tech_capitalism':'Открывает +1 множитель однотипных торговых товаров','tech_hydroponics':'Открывает улучшение Пастбища и Пекарни, 750 роста на яйцо бонуса','tech_industrial_era':'Открывает +1 уровень юнитов, +1 слот Чуда','tech_abyssal_composites':'Металл Т5, Кожа Т5, Меч Т5, Эндерлук Т5','tech_abyssal_working':'Открывает Лук Т5, Арбалет, Топор, Щит Т5','tech_robotics':'3 ОП за первого юнита Ур.10; 1 ОП/нед за каждый уникальный тип Ур.10','tech_enlightenment':'3 ОП при завершении; 1 ОП в неделю','tech_council_of_eight':'Открывает Совет Восьми',
+};
+
+const LEVEL_TECHS = {
+  0:['tech_ancient_era'],1:['tech_belief'],2:['tech_mining','tech_agriculture','tech_laws','tech_pantheon'],3:['tech_classical_era'],
+  4:['tech_artisanship','tech_iron_working','tech_armory','tech_productivity','tech_pottery','tech_calendar','tech_state_workforce','tech_brewing'],
+  5:['tech_masonry','tech_toolsmithing','tech_the_wheel','tech_animal_husbandry','tech_code_of_laws'],
+  6:['tech_construction_site','tech_land_taxes','tech_trading','tech_writing','tech_monarchy'],
+  7:['tech_antiquity_era'],
+  8:['tech_steel_working','tech_craftsmanship','tech_castles','tech_military_tradition','tech_deep_mining','tech_commerce','tech_horseback_riding','tech_minting','tech_barter','tech_early_empire'],
+  9:['tech_foundation','tech_sifting','tech_sailing','tech_conservation','tech_priesthood','tech_guilds'],
+  10:['tech_logistic','tech_gunpowder','tech_open_field_excavation','tech_aquaculture','tech_baking','tech_printing_press','tech_scholarship','tech_global_trade','tech_feudalism'],
+  11:['tech_medieval_era'],
+  12:['tech_carbide_working','tech_chemical_bonding','tech_philosophy','tech_mining_guilds','tech_rationalism','tech_exploration','tech_ritual','tech_currency','tech_construction'],
+  13:['tech_siege_tactics','tech_branch_mining','tech_turbines','tech_importation','tech_ideology','tech_compass','tech_education','tech_taxation','tech_urbanization','tech_advanced_masonry'],
+  14:['tech_fortification','tech_machinery','tech_mercantile','tech_inquisition','tech_energy_study','tech_gears','tech_banking','tech_nationalism','tech_sanitization'],
+  15:['tech_renaissance_era'],
+  16:['tech_composite','tech_titanium_working','tech_communication','tech_advanced_efficiency','tech_engineering','tech_replaceable_parts','tech_tourism','tech_civil_service','tech_trade_networks','tech_economics','tech_agency','tech_politics','tech_core_mining'],
+  17:['tech_radio','tech_globalization','tech_industrialization','tech_world_trade','tech_cultural_heritage','tech_experimentation','tech_stock_market','tech_capitalism','tech_hydroponics'],
+  18:['tech_industrial_era'],
+  19:['tech_abyssal_composites','tech_abyssal_working','tech_council_of_eight'],
+  20:['tech_robotics','tech_enlightenment'],
+};
+
+const WONDER_IDS = ['tech_great_pyramid','tech_great_lighthouse','tech_hanging_gardens','tech_colossus','tech_grand_ship_ingermanland','tech_taj_mahal','tech_temple_of_artemis','tech_statue_of_liberty','tech_notre_dame','tech_colosseum','tech_oxford_university','tech_himeji','tech_kremlin','tech_angkor_wat','tech_chichen_itza','tech_big_ben','tech_globe_theatre','tech_oracle','tech_brandenburg_gate','tech_global_stock_exchange','tech_huey_teocalli','tech_porcelain_tower','tech_great_library'];
+
+const NODE_W = 148, NODE_H = 96, COL_GAP = 44, ROW_GAP = 20;
+let zoom = 1.0;
+let lang = 'en';
+let activeEra = -1;
+let techMap = {};
+let positions = {};
+let selectedId = null;
+
+TECHS_EN.forEach(t => techMap[t.id] = t);
+
+function fmtN(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(n%1000000===0?0:1)+'M';
+  if (n >= 1000) return (n/1000).toFixed(n%1000===0?0:1)+'K';
+  return String(n);
+}
+
+function getTechName(t) {
+  if (lang === 'ru' && NAMES_RU[t.id]) return NAMES_RU[t.id];
+  return t.name;
+}
+function getTechDesc(t) {
+  if (lang === 'ru' && DESC_RU[t.id]) return DESC_RU[t.id];
+  return t.description || '';
+}
+
+function parseReqs(str) {
+  if (!str) return [];
+  return str.split(/[\/:]/).filter(Boolean).map(s=>s.trim());
+}
+function isOrReq(str) { return str && str.includes('/'); }
+
+function setLang(l) {
+  lang = l;
+  document.getElementById('btn-en').classList.toggle('active', l==='en');
+  document.getElementById('btn-ru').classList.toggle('active', l==='ru');
+  document.getElementById('lbl-scroll').textContent = I18N[l].scrollHint;
+  document.getElementById('leg-req').textContent = I18N[l].legReq;
+  document.getElementById('leg-or').textContent = I18N[l].legOr;
+  document.getElementById('lbl-unlocks').textContent = I18N[l].unlocks;
+  document.getElementById('lbl-requires').textContent = I18N[l].requires;
+  buildFilters();
+  render();
+  if (selectedId) openPanel(selectedId);
+}
+
+function buildFilters() {
+  const t = I18N[lang];
+  const container = document.getElementById('era-filters');
+  container.innerHTML = '';
+  const eras = [
+    {key:-1, label:t.eraAll, cls:'e0'},
+    {key:1, label:t.era1, cls:'e1'},
+    {key:2, label:t.era2, cls:'e2'},
+    {key:3, label:t.era3, cls:'e3'},
+    {key:4, label:t.era4, cls:'e4'},
+    {key:5, label:t.era5, cls:'e5'},
+    {key:6, label:t.era6, cls:'e6'},
+    {key:0, label:t.eraW, cls:'ew'},
+  ];
+  eras.forEach(e => {
+    const btn = document.createElement('button');
+    btn.className = 'era-btn ' + e.cls + (activeEra===e.key?' active':'');
+    btn.textContent = e.label;
+    btn.onclick = () => { activeEra = e.key; buildFilters(); render(); };
+    container.appendChild(btn);
+  });
+}
+
+function render() {
+  const canvas = document.getElementById('canvas-wrap');
+  // clear nodes (keep svg)
+  Array.from(canvas.children).forEach(c => { if (c.id !== 'svg-layer') c.remove(); });
+
+  let allLevels = Object.keys(LEVEL_TECHS).map(Number).sort((a,b)=>a-b);
+  let maxLevel = Math.max(...allLevels);
+
+  // wonder column
+  const WONDER_LEVEL = maxLevel + 1;
+
+  // compute x per level
+  const levelX = {};
+  let x = 20;
+  for (let lv of allLevels) {
+    levelX[lv] = x;
+    x += NODE_W + COL_GAP;
+  }
+  // wonder column start X
+  levelX[WONDER_LEVEL] = x;
+
+  // compute y per node — first pass to find maxH
+  positions = {};
+  let maxH = 0;
+
+  for (let lv of allLevels) {
+    const ids = LEVEL_TECHS[lv];
+    const colH = ids.length * (NODE_H + ROW_GAP) - ROW_GAP;
+    maxH = Math.max(maxH, colH);
+  }
+  const wondIds = (activeEra === -1 || activeEra === 0) ? WONDER_IDS : [];
+  if (wondIds.length) {
+    const wRows = Math.ceil(wondIds.length / 3);
+    maxH = Math.max(maxH, wRows * (NODE_H + ROW_GAP) - ROW_GAP);
+  }
+  const PADDING = 40;
+  const totalCanvasH = maxH + PADDING * 2;
+
+  for (let lv of allLevels) {
+    const ids = LEVEL_TECHS[lv];
+    const colH = ids.length * (NODE_H + ROW_GAP) - ROW_GAP;
+    const startY = PADDING + Math.round((maxH - colH) / 2);
+    ids.forEach((id, i) => {
+      positions[id] = { x: levelX[lv], y: startY + i*(NODE_H+ROW_GAP), w: NODE_W, h: NODE_H };
+    });
+  }
+
+  // wonder nodes — 3 columns
+  const WONDER_COLS = 3;
+  if (wondIds.length) {
+    const rows = Math.ceil(wondIds.length / WONDER_COLS);
+    const colH = rows * (NODE_H + ROW_GAP) - ROW_GAP;
+    const startY = PADDING + Math.round((maxH - colH) / 2);
+    wondIds.forEach((id, i) => {
+      const col = i % WONDER_COLS;
+      const row = Math.floor(i / WONDER_COLS);
+      positions[id] = {
+        x: levelX[WONDER_LEVEL] + col * (NODE_W + COL_GAP / 2),
+        y: startY + row * (NODE_H + ROW_GAP),
+        w: NODE_W, h: NODE_H
+      };
+    });
+  }
+
+  const totalW = levelX[WONDER_LEVEL] + (wondIds.length ? WONDER_COLS * (NODE_W + COL_GAP / 2) : 0) + 20;
+
+  canvas.style.width = totalW + 'px';
+  canvas.style.height = totalCanvasH + 'px';
+  applyTransform();
+
+  // SVG edges
+  const svg = document.getElementById('svg-layer');
+  svg.setAttribute('width', totalW);
+  svg.setAttribute('height', totalCanvasH);
+  svg.innerHTML = `<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>`;
+
+  const drawnEdges = new Set();
+  TECHS_EN.forEach(tech => {
+    if (!tech.require_techs) return;
+    const toPos = positions[tech.id];
+    if (!toPos) return;
+    const reqs = parseReqs(tech.require_techs);
+    const isOr = isOrReq(tech.require_techs);
+    reqs.forEach(reqId => {
+      const fromPos = positions[reqId];
+      if (!fromPos) return;
+      const key = reqId+'->'+tech.id;
+      if (drawnEdges.has(key)) return;
+      drawnEdges.add(key);
+
+      const fromT = techMap[reqId];
+      const col = ERA_COLORS[fromT ? fromT.era : 0] || '#888';
+      const x1 = fromPos.x + fromPos.w, y1 = fromPos.y + fromPos.h/2;
+      const x2 = toPos.x, y2 = toPos.y + toPos.h/2;
+      const mx = (x1+x2)/2;
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d', `M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`);
+      path.setAttribute('fill','none');
+      path.setAttribute('stroke', col);
+      path.setAttribute('stroke-width', isOr ? '1' : '1.8');
+      path.setAttribute('stroke-opacity', isOr ? '0.35' : '0.5');
+      if (isOr) path.setAttribute('stroke-dasharray','5 4');
+      path.setAttribute('marker-end','url(#arr)');
+      path.classList.add('edge-path');
+      path.dataset.from = reqId;
+      path.dataset.to = tech.id;
+      svg.appendChild(path);
+    });
+  });
+
+  // Filter tech list
+  let techsToShow = TECHS_EN.filter(t => {
+    if (t.wonder && t.era === 0) return false; // wonders shown separately
+    if (activeEra === -1) return true;
+    if (activeEra === 0) return t.wonder || t.era === 0;
+    return t.era === activeEra || t.unlock_era_tech && t.era === activeEra+1;
+  });
+  // always show all for connections
+  let renderTechs = activeEra === -1 ? TECHS_EN.filter(t => !(t.wonder && t.era===0)) : TECHS_EN.filter(t => {
+    if (t.wonder && t.era===0) return false;
+    return true;
+  });
+
+  TECHS_EN.forEach(tech => {
+    if (tech.wonder && tech.era===0) return;
+    const pos = positions[tech.id];
+    if (!pos) return;
+
+    const dim = activeEra !== -1 && tech.era !== activeEra;
+    const col = ERA_COLORS[tech.era] || '#888';
+
+    const div = document.createElement('div');
+    div.className = `tech-node era-${tech.era}` + (tech.unlock_era_tech?' era-unlock':'') + (tech.wonder?' wonder-node':'') + (dim?' dimmed':'');
+    div.style.left = pos.x+'px';
+    div.style.top = pos.y+'px';
+    div.style.width = pos.w+'px';
+    div.style.minHeight = pos.h+'px';
+    div.dataset.id = tech.id;
+    div.style.animationDelay = Math.random()*0.2+'s';
+
+    const t = I18N[lang];
+    const badge = document.createElement('div');
+    badge.className = 'node-era-badge';
+    badge.textContent = tech.unlock_era_tech ? t.eraUnlock : tech.wonder ? t.wonder : `${t['era'+tech.era]||'Era '+tech.era}`;
+    div.appendChild(badge);
+
+    const name = document.createElement('div');
+    name.className = 'node-name';
+    name.textContent = getTechName(tech);
+    div.appendChild(name);
+
+    const desc = document.createElement('div');
+    desc.className = 'node-desc';
+    desc.textContent = getTechDesc(tech);
+    div.appendChild(desc);
+
+    const costs = document.createElement('div');
+    costs.className = 'node-costs';
+    costs.innerHTML = `<span class="node-cost"><span class="cost-icon">🔬</span>${fmtN(tech.beaker_cost)}</span><span class="node-cost"><span class="cost-icon">💰</span>${fmtN(tech.cost)}</span>`;
+    div.appendChild(costs);
+
+    div.onclick = () => openPanel(tech.id);
+    canvas.appendChild(div);
+  });
+
+  // Wonders
+  wondIds.forEach(id => {
+    const tech = techMap[id];
+    if (!tech) return;
+    const pos = positions[id];
+    if (!pos) return;
+
+    const div = document.createElement('div');
+    div.className = 'tech-node wonder-node';
+    div.style.left = pos.x+'px';
+    div.style.top = pos.y+'px';
+    div.style.width = pos.w+'px';
+    div.style.minHeight = pos.h+'px';
+    div.dataset.id = id;
+    div.style.animationDelay = Math.random()*0.2+'s';
+
+    const t = I18N[lang];
+    const badge = document.createElement('div');
+    badge.className = 'node-era-badge';
+    badge.textContent = t.wonder;
+    div.appendChild(badge);
+
+    const name = document.createElement('div');
+    name.className = 'node-name';
+    name.textContent = getTechName(tech);
+    div.appendChild(name);
+
+    const desc = document.createElement('div');
+    desc.className = 'node-desc';
+    desc.textContent = getTechDesc(tech);
+    div.appendChild(desc);
+
+    const costs = document.createElement('div');
+    costs.className = 'node-costs';
+    costs.innerHTML = `<span class="node-cost"><span class="cost-icon">🔬</span>${fmtN(tech.beaker_cost)}</span>`;
+    div.appendChild(costs);
+
+    div.onclick = () => openPanel(id);
+    canvas.appendChild(div);
+  });
+
+  // Add wonder header
+  if (wondIds.length > 0) {
+    const wRows = Math.ceil(wondIds.length / WONDER_COLS);
+    const wColH = wRows * (NODE_H + ROW_GAP) - ROW_GAP;
+    const wStartY = PADDING + Math.round((maxH - wColH) / 2);
+    const wTotalW = WONDER_COLS * NODE_W + (WONDER_COLS - 1) * (COL_GAP / 2);
+    const hdr = document.createElement('div');
+    hdr.style.cssText = `position:absolute;left:${levelX[WONDER_LEVEL]}px;top:${wStartY - 22}px;width:${wTotalW}px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--wonder);opacity:0.7;text-align:center;`;
+    hdr.textContent = '✦ ' + I18N[lang].eraW + ' ✦';
+    canvas.appendChild(hdr);
+  }
+}
+
+function openPanel(id) {
+  selectedId = id;
+  const tech = techMap[id];
+  if (!tech) return;
+
+  const col = ERA_COLORS[tech.era] || '#888';
+  const t = I18N[lang];
+
+  document.getElementById('panel-stripe').style.background = col;
+  document.getElementById('panel-era-label').style.color = col;
+  document.getElementById('panel-era-label').textContent = tech.wonder ? t.wonder : tech.unlock_era_tech ? t.eraUnlock : (t['era'+tech.era]||'');
+  document.getElementById('panel-title').textContent = getTechName(tech);
+  document.getElementById('panel-desc').textContent = getTechDesc(tech);
+
+  const costsEl = document.getElementById('panel-costs');
+  costsEl.innerHTML = `
+    <div class="panel-cost-item">
+      <div class="panel-cost-label">${t.labelBeaker}</div>
+      <div class="panel-cost-value">🔬 ${fmtN(tech.beaker_cost)}</div>
+    </div>
+    <div class="panel-cost-item">
+      <div class="panel-cost-label">${t.labelCost}</div>
+      <div class="panel-cost-value">💰 ${fmtN(tech.cost)}</div>
+    </div>`;
+
+  const reqsEl = document.getElementById('panel-reqs');
+  reqsEl.innerHTML = '';
+  const section = document.getElementById('panel-reqs-section');
+
+  if (tech.require_techs) {
+    section.style.display = '';
+    const reqs = parseReqs(tech.require_techs);
+    const isOr = isOrReq(tech.require_techs);
+    reqs.forEach(reqId => {
+      const rt = techMap[reqId];
+      if (!rt) return;
+      const item = document.createElement('div');
+      item.className = 'req-item';
+      const dot = document.createElement('div');
+      dot.className = 'req-dot';
+      dot.style.background = ERA_COLORS[rt.era] || '#888';
+      item.appendChild(dot);
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = getTechName(rt);
+      item.appendChild(nameSpan);
+      const typeSpan = document.createElement('span');
+      typeSpan.className = 'req-type';
+      typeSpan.textContent = isOr ? t.orReq : t.andReq;
+      typeSpan.style.color = isOr ? 'var(--text3)' : col;
+      item.appendChild(typeSpan);
+      item.onclick = () => openPanel(reqId);
+      reqsEl.appendChild(item);
+    });
+  } else {
+    section.style.display = 'none';
+  }
+
+  document.getElementById('detail-panel').classList.add('open');
+  applyHighlight(id);
+}
+
+function closePanel() {
+  selectedId = null;
+  document.getElementById('detail-panel').classList.remove('open');
+  clearHighlight();
+}
+
+// ── Path highlighting ──────────────────────────
+
+// Returns Set of all ancestor IDs (AND + OR branches, full tree)
+function getAncestors(id, visited = new Set()) {
+  if (visited.has(id)) return visited;
+  visited.add(id);
+  const tech = techMap[id];
+  if (!tech || !tech.require_techs) return visited;
+  parseReqs(tech.require_techs).forEach(reqId => getAncestors(reqId, visited));
+  return visited;
+}
+
+function applyHighlight(selectedId) {
+  const ancestors = getAncestors(selectedId); // includes selectedId itself
+  const canvas = document.getElementById('canvas-wrap');
+
+  // Nodes
+  canvas.querySelectorAll('.tech-node').forEach(el => {
+    const id = el.dataset.id;
+    el.classList.remove('node-selected', 'node-path', 'node-faded');
+    if (id === selectedId) {
+      el.classList.add('node-selected');
+    } else if (ancestors.has(id)) {
+      el.classList.add('node-path');
+    } else {
+      el.classList.add('node-faded');
+    }
+  });
+
+  // Edges — highlight only edges whose both endpoints are in the ancestor path
+  const svg = document.getElementById('svg-layer');
+  svg.querySelectorAll('.edge-path').forEach(el => {
+    el.classList.remove('edge-active', 'edge-faded');
+    const from = el.dataset.from, to = el.dataset.to;
+    if (ancestors.has(from) && ancestors.has(to)) {
+      el.classList.add('edge-active');
+    } else {
+      el.classList.add('edge-faded');
+    }
+  });
+}
+
+function clearHighlight() {
+  const canvas = document.getElementById('canvas-wrap');
+  canvas.querySelectorAll('.tech-node').forEach(el => {
+    el.classList.remove('node-selected', 'node-path', 'node-faded');
+  });
+  const svg = document.getElementById('svg-layer');
+  svg.querySelectorAll('.edge-path').forEach(el => {
+    el.classList.remove('edge-active', 'edge-faded');
+  });
+}
+
+// ── Pan + zoom state ───────────────────────────
+let panX = 24, panY = 24;
+let isPanning = false;
+let panStartX = 0, panStartY = 0, panStartPanX = 0, panStartPanY = 0;
+
+function applyTransform() {
+  const zc = document.getElementById('zoom-container');
+  zc.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
+  document.getElementById('zoom-label').textContent = Math.round(zoom * 100) + '%';
+}
+
+function resetView() {
+  zoom = 1.0; panX = 24; panY = 24;
+  applyTransform();
+}
+
+function setZoom(newZoom, originX, originY) {
+  // originX/Y in screen coords relative to scroll-area
+  const sa = document.getElementById('scroll-area');
+  const rect = sa.getBoundingClientRect();
+  const ox = (originX !== undefined ? originX : rect.width / 2);
+  const oy = (originY !== undefined ? originY : rect.height / 2);
+
+  const prevZoom = zoom;
+  zoom = Math.max(0.2, Math.min(3.0, newZoom));
+
+  // Adjust pan so the point under the cursor stays fixed:
+  // worldX = (ox - panX) / prevZoom
+  // After zoom: ox = worldX * zoom + panX_new  =>  panX_new = ox - worldX * zoom
+  const worldX = (ox - panX) / prevZoom;
+  const worldY = (oy - panY) / prevZoom;
+  panX = ox - worldX * zoom;
+  panY = oy - worldY * zoom;
+
+  applyTransform();
+}
+
+const scrollArea = document.getElementById('scroll-area');
+
+// Wheel: zoom toward cursor, no modifier needed
+scrollArea.addEventListener('wheel', e => {
+  e.preventDefault();
+  const rect = scrollArea.getBoundingClientRect();
+  const ox = e.clientX - rect.left;
+  const oy = e.clientY - rect.top;
+  const delta = e.deltaMode === 1 ? e.deltaY * 30 : e.deltaY; // lines vs pixels
+  const factor = Math.pow(0.999, delta);
+  setZoom(zoom * factor, ox, oy);
+}, { passive: false });
+
+// Drag to pan
+let didPan = false;
+scrollArea.addEventListener('mousedown', e => {
+  if (e.button !== 0) return;
+  isPanning = true;
+  didPan = false;
+  panStartX = e.clientX;
+  panStartY = e.clientY;
+  panStartPanX = panX;
+  panStartPanY = panY;
+  scrollArea.classList.add('panning');
+});
+window.addEventListener('mousemove', e => {
+  if (!isPanning) return;
+  const dx = e.clientX - panStartX, dy = e.clientY - panStartY;
+  if (Math.abs(dx) > 3 || Math.abs(dy) > 3) didPan = true;
+  panX = panStartPanX + dx;
+  panY = panStartPanY + dy;
+  applyTransform();
+});
+window.addEventListener('mouseup', e => {
+  if (!isPanning) return;
+  isPanning = false;
+  scrollArea.classList.remove('panning');
+});
+
+// click-to-deselect on empty background
+scrollArea.addEventListener('click', e => {
+  if (didPan) { e.stopPropagation(); didPan = false; return; }
+  if (!e.target.closest('.tech-node')) closePanel();
+}, true);
+
+// Touch pan + pinch zoom
+let touches = {};
+let lastPinchDist = null;
+let touchPanStartX = 0, touchPanStartY = 0;
+
+scrollArea.addEventListener('touchstart', e => {
+  e.preventDefault();
+  Array.from(e.changedTouches).forEach(t => touches[t.identifier] = { x: t.clientX, y: t.clientY });
+  const pts = Object.values(touches);
+  if (pts.length === 1) {
+    touchPanStartX = pts[0].x; touchPanStartY = pts[0].y;
+    panStartPanX = panX; panStartPanY = panY;
+    lastPinchDist = null;
+  } else if (pts.length === 2) {
+    lastPinchDist = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+  }
+}, { passive: false });
+
+scrollArea.addEventListener('touchmove', e => {
+  e.preventDefault();
+  Array.from(e.changedTouches).forEach(t => {
+    if (touches[t.identifier]) touches[t.identifier] = { x: t.clientX, y: t.clientY };
+  });
+  const pts = Object.values(touches);
+  if (pts.length === 1) {
+    panX = panStartPanX + (pts[0].x - touchPanStartX);
+    panY = panStartPanY + (pts[0].y - touchPanStartY);
+    applyTransform();
+  } else if (pts.length === 2) {
+    const dist = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+    if (lastPinchDist) {
+      const rect = scrollArea.getBoundingClientRect();
+      const mx = (pts[0].x + pts[1].x) / 2 - rect.left;
+      const my = (pts[0].y + pts[1].y) / 2 - rect.top;
+      setZoom(zoom * (dist / lastPinchDist), mx, my);
+    }
+    lastPinchDist = dist;
+  }
+}, { passive: false });
+
+scrollArea.addEventListener('touchend', e => {
+  Array.from(e.changedTouches).forEach(t => delete touches[t.identifier]);
+  const pts = Object.values(touches);
+  if (pts.length === 1) {
+    touchPanStartX = pts[0].x; touchPanStartY = pts[0].y;
+    panStartPanX = panX; panStartPanY = panY;
+    lastPinchDist = null;
+  } else if (pts.length === 0) lastPinchDist = null;
+}, { passive: false });
+
+// Init
+buildFilters();
+render();
+</script>
+</body>
+</html>
